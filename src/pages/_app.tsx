@@ -62,6 +62,21 @@ const globalStyles = `
 
   small { font-size: clamp(11px, 1.3vw, 18px) !important; }
 
+  /* Tailwind text utility classes - CRITICAL for card scaling */
+  .text-xs { font-size: clamp(10px, 1.2vw, 14px) !important; }
+  .text-sm { font-size: clamp(12px, 1.5vw, 18px) !important; }
+  .text-base { font-size: clamp(13px, 1.5vw, 20px) !important; }
+  .text-lg { font-size: clamp(14px, 1.6vw, 22px) !important; }
+  .text-xl { font-size: clamp(16px, 1.8vw, 26px) !important; }
+  .text-2xl { font-size: clamp(18px, 2vw, 28px) !important; }
+  .text-3xl { font-size: clamp(20px, 2.5vw, 32px) !important; }
+  .text-4xl { font-size: clamp(24px, 3vw, 40px) !important; }
+  .text-5xl { font-size: clamp(28px, 3.5vw, 48px) !important; }
+  .text-6xl { font-size: clamp(32px, 4vw, 56px) !important; }
+  .text-7xl { font-size: clamp(36px, 4.5vw, 64px) !important; }
+  .text-8xl { font-size: clamp(40px, 5vw, 72px) !important; }
+  .text-9xl { font-size: clamp(48px, 6vw, 96px) !important; }
+
   /* PDF and document text */
   [class*="pdf"],
   [class*="document"],
