@@ -1110,7 +1110,7 @@ export const WeeklyHourlyCalendar: React.FC<WeeklyHourlyCalendarProps> = ({
                             onDragStart={(e) => handleDragStart(e, task)}
                             className={`p-2.5 rounded-xl border ${getTextSize('text-xs')} space-y-1.5 transition-all duration-300 ${
                               isBeingDragged
-                                ? 'opacity-40 scale-95 border-dashed border-indigo-400'
+                                ? 'opacity-40 scale-95 border-dashed border-indigo-400 select-none'
                                 : isCompleted
                                 ? 'bg-emerald-950/30 border-emerald-500/40 text-slate-200 opacity-75 scale-[0.99] completed-task-card'
                                 : task.is_locked
