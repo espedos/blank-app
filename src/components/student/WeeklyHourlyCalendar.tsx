@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { HourlyTask, TaskCategory, TaskLocation, User } from '@/types';
 import { StorageService } from '@/lib/storage';
 import confetti from 'canvas-confetti';
@@ -122,6 +122,57 @@ export const WeeklyHourlyCalendar: React.FC<WeeklyHourlyCalendarProps> = ({
   // Aşama 5: Akıllı Takvim Kaydırma Motoru (Bulk Rescheduler) State
   const [shiftScope, setShiftScope] = useState<'uncompleted_only' | 'all_future'>('uncompleted_only');
   const [isExceededModalOpen, setIsExceededModalOpen] = useState(false);
+
+  // Track screen scale level for responsive card fonts
+  const [screenScale, setScreenScale] = useState<1 | 2 | 3>(1);
+
+  // Listen to scale changes
+  React.useEffect(() => {
+    const handleScaleChange = () => {
+      const scale = StorageService.getScreenScale();
+      setScreenScale(scale);
+    };
+
+    // Initial load
+    handleScaleChange();
+
+    // Listen to storage changes
+    window.addEventListener('storage', handleScaleChange);
+    const interval = setInterval(handleScaleChange, 500);
+
+    return () => {
+      window.removeEventListener('storage', handleScaleChange);
+      clearInterval(interval);
+    };
+  }, []);
+
+  // Helper: Get responsive text size based on screen scale
+  const getTextSize = (baseClass: string): string => {
+    if (screenScale === 1) return baseClass;
+    if (screenScale === 2) {
+      // Scale 2x: text-xs → text-sm, text-sm → text-base, etc.
+      if (baseClass === 'text-xs') return 'text-sm';
+      if (baseClass === 'text-sm') return 'text-base';
+      if (baseClass === 'text-base') return 'text-lg';
+      if (baseClass === 'text-lg') return 'text-xl';
+      return baseClass;
+    }
+    if (screenScale === 3) {
+      // Scale 3x: text-xs → text-base, text-sm → text-lg, etc.
+      if (baseClass === 'text-xs') return 'text-base';
+      if (baseClass === 'text-sm') return 'text-lg';
+      if (baseClass === 'text-base') return 'text-xl';
+      if (baseClass === 'text-lg') return 'text-2xl';
+      return baseClass;
+    }
+    return baseClass;
+  };
+
+  // Helper: Get custom pixel sizes scaled
+  const getCustomPixelSize = (pixelValue: number): string => {
+    const scaled = Math.round(pixelValue * (screenScale === 1 ? 1 : screenScale === 2 ? 1.4 : 1.8));
+    return `text-[${scaled}px]`;
+  };
   const [pendingShiftOffset, setPendingShiftOffset] = useState<number | null>(null);
   const [exceededInfo, setExceededInfo] = useState<{ message: string; latestTaskDate: string } | null>(null);
 
@@ -1025,12 +1076,12 @@ export const WeeklyHourlyCalendar: React.FC<WeeklyHourlyCalendarProps> = ({
                       <div className={`day-column-title text-xs font-black ${isToday ? 'text-indigo-300' : 'text-slate-200'}`}>
                         {d.label}
                       </div>
-                      <div className="text-[10px] text-slate-400 day-completion-badge font-bold mt-0.5">
+                      <div className="text-slate-400 day-completion-badge font-bold mt-0.5" style={{ fontSize: screenScale === 1 ? '10px' : screenScale === 2 ? '14px' : '18px' }}>
                         {dayTasks.filter(t => t.isCompleted).length}/{dayTasks.length} Tamam
                       </div>
                     </div>
                     {isToday && (
-                      <span className="text-[9px] uppercase tracking-wider px-1.5 py-0.5 rounded bg-indigo-500 text-white font-extrabold shadow-sm">
+                      <span className="uppercase tracking-wider px-1.5 py-0.5 rounded bg-indigo-500 text-white font-extrabold shadow-sm" style={{ fontSize: screenScale === 1 ? '9px' : screenScale === 2 ? '13px' : '16px' }}>
                         Bugün
                       </span>
                     )}
@@ -1041,9 +1092,9 @@ export const WeeklyHourlyCalendar: React.FC<WeeklyHourlyCalendarProps> = ({
                     {dayTasks.length === 0 ? (
                       <div className="h-36 flex flex-col items-center justify-center text-center p-2 text-slate-500 border border-dashed border-slate-800 rounded-xl">
                         <Clock className="w-5 h-5 mb-1 text-slate-600" />
-                        <span className="text-[11px]">Görev yok</span>
+                        <span style={{ fontSize: screenScale === 1 ? '11px' : screenScale === 2 ? '15px' : '20px' }}>Görev yok</span>
                         {isCounselor && (
-                          <span className="text-[9px] text-indigo-400/80 mt-1">Buraya görev sürükleyin</span>
+                          <span className="text-indigo-400/80 mt-1" style={{ fontSize: screenScale === 1 ? '9px' : screenScale === 2 ? '13px' : '16px' }}>Buraya görev sürükleyin</span>
                         )}
                       </div>
                     ) : (
@@ -1057,7 +1108,7 @@ export const WeeklyHourlyCalendar: React.FC<WeeklyHourlyCalendarProps> = ({
                             key={task.id}
                             draggable={isDraggable}
                             onDragStart={(e) => handleDragStart(e, task)}
-                            className={`p-2.5 rounded-xl border text-xs space-y-1.5 transition-all duration-300 select-none ${
+                            className={`p-2.5 rounded-xl border ${getTextSize('text-xs')} space-y-1.5 transition-all duration-300 select-none ${
                               isBeingDragged
                                 ? 'opacity-40 scale-95 border-dashed border-indigo-400'
                                 : isCompleted
@@ -1075,7 +1126,10 @@ export const WeeklyHourlyCalendar: React.FC<WeeklyHourlyCalendarProps> = ({
                           >
                             {/* Kart Üst Başlık & Kontroller */}
                             <div className="flex items-start justify-between gap-1.5">
-                              <span className="font-mono text-[10px] text-indigo-300 font-bold">
+                              <span
+                                className="font-mono text-indigo-300 font-bold"
+                                style={{ fontSize: screenScale === 1 ? '10px' : screenScale === 2 ? '14px' : '18px' }}
+                              >
                                 {task.startTime} - {task.endTime}
                               </span>
 
@@ -1146,19 +1200,25 @@ export const WeeklyHourlyCalendar: React.FC<WeeklyHourlyCalendarProps> = ({
                             {/* Renkli Etiketler: [Ders - Sınıf], [Hedef: X Soru], [Kaynak: ...] */}
                             <div className="flex flex-wrap items-center gap-1 pt-0.5">
                               {task.priority_level === 'high_priority' && (
-                                <span className="text-[9px] px-1.5 py-0.5 rounded bg-rose-600/30 text-rose-300 border border-rose-500/60 font-black flex items-center gap-0.5 animate-pulse shadow-sm">
+                                <span
+                                  className="px-1.5 py-0.5 rounded bg-rose-600/30 text-rose-300 border border-rose-500/60 font-black flex items-center gap-0.5 animate-pulse shadow-sm"
+                                  style={{ fontSize: screenScale === 1 ? '9px' : screenScale === 2 ? '13px' : '16px' }}
+                                >
                                   <Flame className="w-2.5 h-2.5 text-rose-400" /> KRİTİK
                                 </span>
                               )}
 
                               {/* [Ders - Sınıf] */}
-                              <span className="text-[9px] px-1.5 py-0.5 rounded font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                              <span
+                                className="px-1.5 py-0.5 rounded font-bold bg-indigo-500/20 text-indigo-300 border border-indigo-500/30"
+                                style={{ fontSize: screenScale === 1 ? '9px' : screenScale === 2 ? '13px' : '16px' }}
+                              >
                                 [{task.subjectName} {task.grade_level ? `- ${task.grade_level}. Sınıf` : ''}]
                               </span>
 
                               {/* [Hedef: 24 Soru] */}
                               {task.target_question_count && !task.isCompleted && (
-                                <span className="text-[9px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-bold font-mono flex items-center gap-0.5">
+                                <span className="px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 font-bold font-mono flex items-center gap-0.5" style={{ fontSize: screenScale === 1 ? '9px' : screenScale === 2 ? '13px' : '16px' }}>
                                   <Target className="w-2.5 h-2.5 text-emerald-400" />
                                   [Hedef: {task.target_question_count} Soru]
                                 </span>
@@ -1166,20 +1226,20 @@ export const WeeklyHourlyCalendar: React.FC<WeeklyHourlyCalendarProps> = ({
 
                               {/* [Kaynak: Kitap Adı] */}
                               {task.resource_book && (
-                                <span className="text-[9px] px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30 font-bold truncate max-w-[170px]" title={task.resource_book}>
+                                <span className="px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30 font-bold truncate max-w-[170px]" title={task.resource_book} style={{ fontSize: screenScale === 1 ? '9px' : screenScale === 2 ? '13px' : '16px' }}>
                                   [Kaynak: {task.resource_book}]
                                 </span>
                               )}
 
                               {/* Eylem Türü Rozeti */}
                               {task.action_type && (
-                                <span className={`text-[9px] px-1.5 py-0.5 rounded font-bold border flex items-center gap-0.5 ${
+                                <span className={`px-1.5 py-0.5 rounded font-bold border flex items-center gap-0.5 ${
                                   task.action_type === 'question_bank' ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20' :
                                   task.action_type === 'study' ? 'bg-blue-500/10 text-blue-400 border-blue-500/20' :
                                   task.action_type === 'past_questions' ? 'bg-amber-500/10 text-amber-400 border-amber-500/20' :
                                   task.action_type === 'mini_quiz' ? 'bg-purple-500/10 text-purple-400 border-purple-500/20' :
                                   'bg-rose-500/10 text-rose-400 border-rose-500/20'
-                                }`}>
+                                }`} style={{ fontSize: screenScale === 1 ? '9px' : screenScale === 2 ? '13px' : '16px' }}>
                                   {task.action_type === 'question_bank' ? '✍️ Soru Bankası' :
                                    task.action_type === 'study' ? '📖 Konu Çalışması' :
                                    task.action_type === 'past_questions' ? '🏛️ Çıkmış Sorular' :
@@ -1188,25 +1248,25 @@ export const WeeklyHourlyCalendar: React.FC<WeeklyHourlyCalendarProps> = ({
                               )}
 
                               {task.is_recurring && (
-                                <span className="text-[9px] px-1.5 py-0.5 rounded bg-cyan-950/60 text-cyan-300 border border-cyan-500/30 font-semibold flex items-center gap-0.5">
+                                <span className="px-1.5 py-0.5 rounded bg-cyan-950/60 text-cyan-300 border border-cyan-500/30 font-semibold flex items-center gap-0.5" style={{ fontSize: screenScale === 1 ? '9px' : screenScale === 2 ? '13px' : '16px' }}>
                                   <Repeat className="w-2.5 h-2.5 text-cyan-400" /> Rutin
                                 </span>
                               )}
                             </div>
 
                             {/* Başlık */}
-                            <div className={`font-semibold text-xs leading-snug ${task.isCompleted ? 'line-through text-slate-300 dark:text-slate-300' : 'text-slate-100'}`}>
+                            <div className={`font-semibold ${getTextSize('text-xs')} leading-snug ${task.isCompleted ? 'line-through text-slate-300 dark:text-slate-300' : 'text-slate-100'}`}>
                               {task.title}
                             </div>
 
                             {/* Tamamlanma Sonucu */}
                             {task.isCompleted && (
                               <div className="pt-0.5 space-y-1">
-                                <span className="text-[9px] px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-bold border border-emerald-500/30 flex items-center gap-1 w-fit">
+                                <span className="px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 font-bold border border-emerald-500/30 flex items-center gap-1 w-fit" style={{ fontSize: screenScale === 1 ? '9px' : screenScale === 2 ? '13px' : '16px' }}>
                                   <CheckCircle2 className="w-2.5 h-2.5 text-emerald-400" /> Tamamlandı ✨
                                 </span>
                                 {task.correct_count !== undefined && task.solved_question_count ? (
-                                  <span className="text-[9px] px-1.5 py-0.5 rounded bg-emerald-900/40 text-emerald-200 border border-emerald-500/40 font-mono font-bold flex items-center gap-1 w-fit">
+                                  <span className="px-1.5 py-0.5 rounded bg-emerald-900/40 text-emerald-200 border border-emerald-500/40 font-mono font-bold flex items-center gap-1 w-fit" style={{ fontSize: screenScale === 1 ? '9px' : screenScale === 2 ? '13px' : '16px' }}>
                                     📊 {task.correct_count}D {task.incorrect_count || 0}Y {task.empty_count || 0}B ({task.solved_question_count} Soru)
                                   </span>
                                 ) : null}
@@ -1222,7 +1282,8 @@ export const WeeklyHourlyCalendar: React.FC<WeeklyHourlyCalendarProps> = ({
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     onClick={(e) => e.stopPropagation()}
-                                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white border border-blue-400/40 text-[9px] font-extrabold shadow-sm transition hover:scale-105 active:scale-95"
+                                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white border border-blue-400/40 font-extrabold shadow-sm transition hover:scale-105 active:scale-95"
+                                    style={{ fontSize: screenScale === 1 ? '9px' : screenScale === 2 ? '13px' : '16px' }}
                                   >
                                     <ExternalLink className="w-2.5 h-2.5 text-white" />
                                     <span>[Ders Linkine Git &rarr;]</span>
@@ -1240,7 +1301,8 @@ export const WeeklyHourlyCalendar: React.FC<WeeklyHourlyCalendarProps> = ({
                                         showNotification('info', `📎 "${task.attachment_name}" eki başarıyla açıldı.`);
                                       }
                                     }}
-                                    className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-purple-600/20 hover:bg-purple-600/40 text-purple-300 border border-purple-500/30 text-[9px] font-bold transition hover:scale-105 active:scale-95"
+                                    className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-purple-600/20 hover:bg-purple-600/40 text-purple-300 border border-purple-500/30 font-bold transition hover:scale-105 active:scale-95"
+                                    style={{ fontSize: screenScale === 1 ? '9px' : screenScale === 2 ? '13px' : '16px' }}
                                     title="Dosya / Test Ekini Görüntüle"
                                   >
                                     <Paperclip className="w-2.5 h-2.5 text-purple-400" />
@@ -1253,28 +1315,28 @@ export const WeeklyHourlyCalendar: React.FC<WeeklyHourlyCalendarProps> = ({
                             {/* Rozetler */}
                             <div className="flex flex-wrap items-center gap-1 pt-0.5">
                               {task.is_locked && (
-                                <span className="text-[9px] px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30 flex items-center gap-0.5 font-bold" title="Danışman Saati (is_locked=true)">
+                                <span className="px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30 flex items-center gap-0.5 font-bold" style={{ fontSize: screenScale === 1 ? '9px' : screenScale === 2 ? '13px' : '16px' }} title="Danışman Saati (is_locked=true)">
                                   <Lock className="w-2.5 h-2.5 text-amber-400" /> Kilitli
                                 </span>
                               )}
                               {task.category === 'private_tutoring' && (
-                                <span className="text-[9px] px-1.5 py-0.2 rounded bg-purple-500/20 text-purple-300 border border-purple-500/30 flex items-center gap-0.5 font-bold" title="48 saat içinde ödev oluşturur">
+                                <span className="px-1.5 py-0.2 rounded bg-purple-500/20 text-purple-300 border border-purple-500/30 flex items-center gap-0.5 font-bold" style={{ fontSize: screenScale === 1 ? '9px' : screenScale === 2 ? '13px' : '16px' }} title="48 saat içinde ödev oluşturur">
                                   <BookOpen className="w-2.5 h-2.5 text-purple-400" /> Özel Ders
                                 </span>
                               )}
                               {task.category === 'mentor_session' && (
-                                <span className="text-[9px] px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 flex items-center gap-0.5 font-bold">
+                                <span className="px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 flex items-center gap-0.5 font-bold" style={{ fontSize: screenScale === 1 ? '9px' : screenScale === 2 ? '13px' : '16px' }}>
                                   <GraduationCap className="w-2.5 h-2.5 text-emerald-400" /> Cen Hoca
                                 </span>
                               )}
                               {task.location && (
-                                <span className="text-[9px] px-1.5 py-0.2 rounded bg-slate-800 text-slate-300 border border-slate-700 flex items-center gap-0.5">
+                                <span className="px-1.5 py-0.2 rounded bg-slate-800 text-slate-300 border border-slate-700 flex items-center gap-0.5" style={{ fontSize: screenScale === 1 ? '9px' : screenScale === 2 ? '13px' : '16px' }}>
                                   <MapPin className="w-2.5 h-2.5 text-cyan-400" />
                                   {task.location === 'library' ? 'Kütüphane' : task.location === 'school' ? 'Okul' : task.location === 'classroom' ? 'Sınıf' : 'Ev'}
                                 </span>
                               )}
                               {task.isRescheduled && (
-                                <span className="text-[9px] px-1.5 py-0.2 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 flex items-center gap-0.5 font-bold" title={task.rescheduledReason}>
+                                <span className="px-1.5 py-0.2 rounded bg-cyan-500/20 text-cyan-300 border border-cyan-500/30 flex items-center gap-0.5 font-bold" style={{ fontSize: screenScale === 1 ? '9px' : screenScale === 2 ? '13px' : '16px' }} title={task.rescheduledReason}>
                                   <RotateCw className="w-2.5 h-2.5 text-cyan-400" /> Telafi
                                 </span>
                               )}
