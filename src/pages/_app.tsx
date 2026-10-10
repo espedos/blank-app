@@ -7,37 +7,37 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
 const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
 export const supabase = createClient(supabaseUrl, supabaseKey)
 
-// Global responsive typography - all text automatically scales
+// Global responsive typography - all text automatically scales with wider, more gradual range
 const globalStyles = `
   :root {
     --base-font-size: 16px;
-    --scale-vw: 2vw;
+    --scale-vw: 1.5vw;
   }
 
   html {
-    font-size: clamp(14px, 2vw, 20px);
+    font-size: clamp(14px, 1.5vw, 22px);
   }
 
-  /* Force ALL elements to have responsive font sizing */
+  /* Force ALL elements to have responsive font sizing - wider range for smoother scaling */
   * {
-    font-size: clamp(14px, 2vw, 16px) !important;
+    font-size: clamp(12px, 1.5vw, 22px) !important;
   }
 
-  h1 { font-size: clamp(32px, 8vw, 56px) !important; }
-  h2 { font-size: clamp(28px, 7vw, 48px) !important; }
-  h3 { font-size: clamp(24px, 6vw, 40px) !important; }
-  h4 { font-size: clamp(20px, 5vw, 32px) !important; }
-  h5 { font-size: clamp(18px, 4vw, 28px) !important; }
-  h6 { font-size: clamp(16px, 3vw, 24px) !important; }
+  h1 { font-size: clamp(28px, 6vw, 56px) !important; }
+  h2 { font-size: clamp(24px, 5vw, 48px) !important; }
+  h3 { font-size: clamp(20px, 4vw, 40px) !important; }
+  h4 { font-size: clamp(18px, 3.5vw, 32px) !important; }
+  h5 { font-size: clamp(16px, 3vw, 28px) !important; }
+  h6 { font-size: clamp(14px, 2.5vw, 24px) !important; }
 
-  p { font-size: clamp(14px, 2vw, 16px) !important; }
-  span { font-size: clamp(14px, 2vw, 16px) !important; }
-  div { font-size: clamp(14px, 2vw, 16px) !important; }
-  button { font-size: clamp(14px, 2vw, 16px) !important; }
-  a { font-size: clamp(14px, 2vw, 16px) !important; }
-  label { font-size: clamp(14px, 2vw, 16px) !important; }
+  p { font-size: clamp(12px, 1.5vw, 22px) !important; }
+  span { font-size: clamp(12px, 1.5vw, 22px) !important; }
+  div { font-size: clamp(12px, 1.5vw, 22px) !important; }
+  button { font-size: clamp(12px, 1.5vw, 22px) !important; }
+  a { font-size: clamp(12px, 1.5vw, 22px) !important; }
+  label { font-size: clamp(12px, 1.5vw, 22px) !important; }
 
-  /* Card elements - extra responsive */
+  /* Card elements - responsive with wider range */
   [class*="card"],
   [class*="item"],
   [class*="box"],
@@ -46,7 +46,7 @@ const globalStyles = `
   [class*="program"],
   [class*="calendar"],
   [class*="schedule"] {
-    font-size: clamp(14px, 2vw, 16px) !important;
+    font-size: clamp(12px, 1.5vw, 22px) !important;
   }
 
   [class*="card"] *,
@@ -57,24 +57,24 @@ const globalStyles = `
   [class*="program"] *,
   [class*="calendar"] *,
   [class*="schedule"] * {
-    font-size: clamp(14px, 2vw, 16px) !important;
+    font-size: clamp(12px, 1.5vw, 22px) !important;
   }
 
-  small { font-size: clamp(12px, 1.8vw, 14px) !important; }
+  small { font-size: clamp(11px, 1.3vw, 18px) !important; }
 
   /* PDF and document text */
   [class*="pdf"],
   [class*="document"],
   [class*="solution"],
   [class*="answer"] {
-    font-size: clamp(14px, 2vw, 16px) !important;
+    font-size: clamp(12px, 1.5vw, 22px) !important;
   }
 
   [class*="pdf"] *,
   [class*="document"] *,
   [class*="solution"] *,
   [class*="answer"] * {
-    font-size: clamp(14px, 2vw, 16px) !important;
+    font-size: clamp(12px, 1.5vw, 22px) !important;
   }
 `
 
