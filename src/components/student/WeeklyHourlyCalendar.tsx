@@ -1108,7 +1108,7 @@ export const WeeklyHourlyCalendar: React.FC<WeeklyHourlyCalendarProps> = ({
                             key={task.id}
                             draggable={isDraggable}
                             onDragStart={(e) => handleDragStart(e, task)}
-                            className={`p-2.5 rounded-xl border ${getTextSize('text-xs')} space-y-1.5 transition-all duration-300 select-none ${
+                            className={`p-2.5 rounded-xl border ${getTextSize('text-xs')} space-y-1.5 transition-all duration-300 ${
                               isBeingDragged
                                 ? 'opacity-40 scale-95 border-dashed border-indigo-400'
                                 : isCompleted
