@@ -33,34 +33,35 @@ export default function QuickstartForm() {
     setError('')
 
     try {
-      // 1. Sign up user with Supabase Auth
-      const { data: authData, error: authError } = await supabase.auth.signUp({
-        email: data.email,
-        password: data.password,
+      // Call backend API to sign up and create profile
+      const response = await fetch('/api/auth/signup', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          email: data.email,
+          password: data.password,
+          userData: {
+            name: data.name,
+            surname: data.surname,
+            class: data.class,
+            school_name: data.school,
+            is_graduated: data.is_graduated,
+            graduation_attempt: data.is_graduated ? data.graduation_attempt || 1 : null,
+            target_track: data.target_track,
+            exam_type: 'yks_tyt',
+            yks_registration_step: 1,
+          }
+        })
       })
 
-      if (authError) throw authError
-      if (!authData.user) throw new Error('User creation failed')
+      const result = await response.json()
 
-      // 2. Create user profile with quickstart data
-      const { error: insertError } = await supabase.from('users').insert({
-        id: authData.user.id,
-        name: data.name,
-        surname: data.surname,
-        class: data.class,
-        school_name: data.school,
-        is_graduated: data.is_graduated,
-        graduation_attempt: data.is_graduated ? data.graduation_attempt || 1 : null,
-        target_track: data.target_track,
-        exam_type: 'yks_tyt',
-        yks_registration_step: 1,
-        email: data.email,
-      })
+      if (!response.ok) {
+        throw new Error(result.error || 'Kayıt başarısız')
+      }
 
-      if (insertError) throw insertError
-
-      // 3. Redirect to detail form
-      router.push(`/yks/register/detay/${authData.user.id}`)
+      // Redirect to detail form
+      router.push(result.redirectUrl)
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Bir hata oluştu'
       setError(message)
