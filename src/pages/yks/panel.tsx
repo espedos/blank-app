@@ -112,43 +112,44 @@ export default function YKSPanel() {
     <div style={{
       maxWidth: '1000px',
       margin: '0 auto',
-      padding: '40px 20px',
-      fontFamily: 'system-ui, -apple-system, sans-serif'
+      padding: 'clamp(20px, 5vw, 40px)',
+      fontFamily: 'system-ui, -apple-system, sans-serif',
+      fontSize: 'clamp(14px, 2vw, 16px)'
     }}>
-      <div style={{ marginBottom: '40px' }}>
-        <h1>Hoşgeldiniz, {user.name}!</h1>
-        <p style={{ color: '#666' }}>
+      <div style={{ marginBottom: 'clamp(20px, 5vw, 40px)' }}>
+        <h1 style={{ fontSize: 'clamp(28px, 7vw, 40px)', margin: '0 0 0.5rem 0' }}>Hoşgeldiniz, {user.name}!</h1>
+        <p style={{ color: '#666', fontSize: 'clamp(14px, 2vw, 16px)', margin: '0.5rem 0 0 0' }}>
           {user.target_track === 'sayisal' ? 'Sayısal' : 'Eşit Ağırlık'} | Sınıf: {user.class}
         </p>
       </div>
 
       {/* Today's Program Section */}
       <div style={{
-        padding: '20px',
+        padding: 'clamp(15px, 3vw, 20px)',
         backgroundColor: '#f9f9f9',
         border: '1px solid #eee',
         borderRadius: '8px',
-        marginBottom: '30px'
+        marginBottom: 'clamp(20px, 5vw, 30px)'
       }}>
-        <h2 style={{ marginTop: 0 }}>Bugünkü Program</h2>
+        <h2 style={{ marginTop: 0, fontSize: 'clamp(22px, 5vw, 28px)', marginBottom: '1rem' }}>Bugünkü Program</h2>
 
         {todayProgram && (
           <div>
             <div style={{
               display: 'grid',
               gridTemplateColumns: '1fr 1fr',
-              gap: '20px',
-              marginBottom: '20px'
+              gap: 'clamp(15px, 3vw, 20px)',
+              marginBottom: 'clamp(15px, 3vw, 20px)'
             }}>
-              <div>
-                <p style={{ color: '#666', marginBottom: '4px' }}>Görev Sayısı</p>
-                <p style={{ fontSize: '24px', fontWeight: 'bold', margin: 0 }}>
+              <div style={{ padding: 'clamp(12px, 2vw, 16px)', backgroundColor: '#fff', borderRadius: '6px', border: '1px solid #ddd' }}>
+                <p style={{ color: '#666', marginBottom: '0.5rem', fontSize: 'clamp(13px, 1.8vw, 15px)' }}>Görev Sayısı</p>
+                <p style={{ fontSize: 'clamp(32px, 8vw, 48px)', fontWeight: 'bold', margin: 0, color: '#0066cc' }}>
                   {todayProgram.item_count}
                 </p>
               </div>
-              <div>
-                <p style={{ color: '#666', marginBottom: '4px' }}>Tahmini Süre</p>
-                <p style={{ fontSize: '24px', fontWeight: 'bold', margin: 0 }}>
+              <div style={{ padding: 'clamp(12px, 2vw, 16px)', backgroundColor: '#fff', borderRadius: '6px', border: '1px solid #ddd' }}>
+                <p style={{ color: '#666', marginBottom: '0.5rem', fontSize: 'clamp(13px, 1.8vw, 15px)' }}>Tahmini Süre</p>
+                <p style={{ fontSize: 'clamp(32px, 8vw, 48px)', fontWeight: 'bold', margin: 0, color: '#cc6600' }}>
                   {Math.round(todayProgram.total_duration / 60)} saat
                 </p>
               </div>
@@ -157,15 +158,19 @@ export default function YKSPanel() {
             <button
               onClick={() => router.push(`/yks/tyt/gunluk-program`)}
               style={{
-                padding: '12px 24px',
+                width: '100%',
+                padding: 'clamp(12px, 2vw, 16px)',
                 backgroundColor: '#0066cc',
                 color: 'white',
                 border: 'none',
                 borderRadius: '4px',
-                fontSize: '16px',
+                fontSize: 'clamp(16px, 2.5vw, 18px)',
                 fontWeight: 600,
-                cursor: 'pointer'
+                cursor: 'pointer',
+                transition: 'all 0.2s'
               }}
+              onMouseOver={(e) => (e.currentTarget.style.backgroundColor = '#0052a3')}
+              onMouseOut={(e) => (e.currentTarget.style.backgroundColor = '#0066cc')}
             >
               Programa Başla →
             </button>
@@ -177,18 +182,18 @@ export default function YKSPanel() {
       <div style={{
         display: 'grid',
         gridTemplateColumns: 'repeat(auto-fit, minmax(250px, 1fr))',
-        gap: '20px'
+        gap: 'clamp(15px, 3vw, 20px)'
       }}>
         <div style={{
-          padding: '20px',
+          padding: 'clamp(15px, 3vw, 20px)',
           backgroundColor: '#f0f8ff',
           border: '1px solid #cce5ff',
           borderRadius: '8px'
         }}>
-          <p style={{ color: '#0066cc', fontWeight: 600, marginBottom: '4px' }}>Türkçe İlerleme</p>
+          <p style={{ color: '#0066cc', fontWeight: 600, marginBottom: '0.75rem', fontSize: 'clamp(15px, 2.2vw, 18px)' }}>Türkçe İlerleme</p>
           <div style={{
             width: '100%',
-            height: '8px',
+            height: '12px',
             backgroundColor: '#e0e0e0',
             borderRadius: '4px',
             overflow: 'hidden'
@@ -199,19 +204,19 @@ export default function YKSPanel() {
               backgroundColor: '#0066cc'
             }} />
           </div>
-          <p style={{ fontSize: '12px', color: '#666', marginTop: '4px' }}>45% tamamlandı</p>
+          <p style={{ fontSize: 'clamp(12px, 1.8vw, 14px)', color: '#666', marginTop: '0.5rem', margin: '0.5rem 0 0 0' }}>45% tamamlandı</p>
         </div>
 
         <div style={{
-          padding: '20px',
+          padding: 'clamp(15px, 3vw, 20px)',
           backgroundColor: '#fff0f0',
           border: '1px solid #ffcccc',
           borderRadius: '8px'
         }}>
-          <p style={{ color: '#cc0000', fontWeight: 600, marginBottom: '4px' }}>Matematik İlerleme</p>
+          <p style={{ color: '#cc0000', fontWeight: 600, marginBottom: '0.75rem', fontSize: 'clamp(15px, 2.2vw, 18px)' }}>Matematik İlerleme</p>
           <div style={{
             width: '100%',
-            height: '8px',
+            height: '12px',
             backgroundColor: '#e0e0e0',
             borderRadius: '4px',
             overflow: 'hidden'
@@ -222,19 +227,19 @@ export default function YKSPanel() {
               backgroundColor: '#cc0000'
             }} />
           </div>
-          <p style={{ fontSize: '12px', color: '#666', marginTop: '4px' }}>30% tamamlandı</p>
+          <p style={{ fontSize: 'clamp(12px, 1.8vw, 14px)', color: '#666', marginTop: '0.5rem', margin: '0.5rem 0 0 0' }}>30% tamamlandı</p>
         </div>
 
         <div style={{
-          padding: '20px',
+          padding: 'clamp(15px, 3vw, 20px)',
           backgroundColor: '#f0fff0',
           border: '1px solid #ccffcc',
           borderRadius: '8px'
         }}>
-          <p style={{ color: '#00aa00', fontWeight: 600, marginBottom: '4px' }}>Fen İlerleme</p>
+          <p style={{ color: '#00aa00', fontWeight: 600, marginBottom: '0.75rem', fontSize: 'clamp(15px, 2.2vw, 18px)' }}>Fen İlerleme</p>
           <div style={{
             width: '100%',
-            height: '8px',
+            height: '12px',
             backgroundColor: '#e0e0e0',
             borderRadius: '4px',
             overflow: 'hidden'
@@ -245,7 +250,7 @@ export default function YKSPanel() {
               backgroundColor: '#00aa00'
             }} />
           </div>
-          <p style={{ fontSize: '12px', color: '#666', marginTop: '4px' }}>52% tamamlandı</p>
+          <p style={{ fontSize: 'clamp(12px, 1.8vw, 14px)', color: '#666', marginTop: '0.5rem', margin: '0.5rem 0 0 0' }}>52% tamamlandı</p>
         </div>
       </div>
     </div>
